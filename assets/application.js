@@ -102,7 +102,7 @@ $(document).ready(function(){
       let
         variants = JSON.parse(decodeURIComponent($form.attr('data-variants'))),
         formData = $form.serializeArray()
-                console.log("variants log ->" + variants)
+                console.log(variants)
                 // console.log(formData)
         },
         validate: function(){

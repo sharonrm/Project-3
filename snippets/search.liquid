@@ -1,0 +1,7 @@
+{% if label == blank %}
+{% assign label = 'search.form.label' | t %}
+{% endif %}
+
+<div class="search-form">
+<form action="/search" method="get" role="search"></form>
+</div>
