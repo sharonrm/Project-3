@@ -1,0 +1,15 @@
+{
+  "current": {
+    "sections": {
+      "Sample": {
+        "type": "slideshow"
+      }
+    },
+    "content_for_index": [
+      "Sample"
+    ]
+  },
+  "presets": {
+    "Default": { }
+  }
+}
