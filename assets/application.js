@@ -92,18 +92,34 @@ $(document).ready(function(){
     addToCartFormSelector = '#add-to-cart-form',
     productOptionSelector = addToCartFormSelector + ' [name*=option]';
 
-    let productForm = {
+  let productForm = {
     onProductOptionChanged: function(event) {
       let
         $form = $(this).closest(addToCartFormSelector),
         selectedVariant = productForm.getActiveVariant($form);
-        },
-         getActiveVariant: function($form) {
+
+      $form.trigger('form:change', [selectedVariant]);
+    },
+    getActiveVariant: function($form) {
       let
         variants = JSON.parse(decodeURIComponent($form.attr('data-variants'))),
-        formData = $form.serializeArray()
+        formData = $form.serializeArray(),
+        formOptions = {
+          option1: null,
+          option2: null,
+          option3: null
+        },
+        selectedVariant = null;
+
+      $.each(formData, function(index, item) {
+        if (item.name.indexOf('option') !== -1) {
+          formOptions[item.name] = item.value;
+        }
+      });
+      
                 console.log(variants)
-                // console.log(formData)
+                console.log(formData)
+                console.log(formOptions)
         },
         validate: function(){
 
