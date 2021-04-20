@@ -99,6 +99,7 @@ $(document).ready(function(){
         selectedVariant = productForm.getActiveVariant($form);
 
       $form.trigger('form:change', [selectedVariant]);
+     
     },
     getActiveVariant: function($form) {
       let
@@ -111,21 +112,60 @@ $(document).ready(function(){
         },
         selectedVariant = null;
 
-      $.each(formData, function(index, item) {
+
+
+        $.each(formData, function(index, item) {
         if (item.name.indexOf('option') !== -1) {
           formOptions[item.name] = item.value;
         }
       });
-      
+
+      $.each(variants, function(index, variant) {
+        if (variant.option1 === formOptions.option1 && variant.option2 === formOptions.option2 && variant.option3 === formOptions.option3) {
+          selectedVariant = variant;
+          return false;
+        }
+      });
+
+      return selectedVariant;
+
                 console.log(variants)
                 console.log(formData)
                 console.log(formOptions)
         },
-        validate: function(){
+        validate: function(event, selectedVariant){
+            let
+                $form = $(this),
+                hasVariant = selectedVariant !== null,
+                canAddToCart = hasVariant && selectedVariant.inventory_quantity > 0,
+                $id = $form.find('.js-variant-id'),
+                $addToCartButton = $form.find('#add-to-cart-button'),
+                $price = $form.find('js-price'),
+                formattedVariantPrice,
+                priceHTML 
 
+                if(hasVariant){
+                    formattedVariantPrice = '$' + (selectedVariant.price/100).toFixed(2)
+                    priceHTML = '<span class="money">'+ formattedVariantPrice + '</span>'
+                } else {
+                    priceHTML = $price.attr('data-default-price')
+                }
+
+console.log(selectedVariant)
+
+                 if (canAddToCart) {
+                    $id.val(selectedVariant.id);
+                    $addToCartButton.prop('disabled', false);
+                 } else {
+                    $id.val('');
+                    $addToCartButton.prop('disabled', true);
+                }
+            $price.html(priceHTML)
+            currencyPicker.onMoneySpanAdded()
         },
         init: function(){
             $(document).on('change', productOptionSelector, productForm.onProductOptionChanged)
+             $(document).on('form:change', addToCartFormSelector, productForm.validate);
         }
     }
 
