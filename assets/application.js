@@ -147,6 +147,7 @@ $(document).ready(function(){
                 if(hasVariant){
                     formattedVariantPrice = '$' + (selectedVariant.price/100).toFixed(2)
                     priceHTML = '<span class="money">'+ formattedVariantPrice + '</span>'
+                    window.history.replaceState(null, null, '?variant='+ selectedVariant.id)
                 } else {
                     priceHTML = $price.attr('data-default-price')
                 }
@@ -170,6 +171,69 @@ console.log(selectedVariant)
     }
 
     productForm.init()
+
+    //Ajax API functionality
+    let miniCartContentsSelector = '.js-mini-cart-contents';
+    let ajaxify = {
+    onAddToCart: function(event) {
+      event.preventDefault();
+
+      $.ajax({
+        type: 'GET',
+        url: '/cart',
+        context: document.body,
+        success: function(context) {
+          let
+            $dataCartContents = $(context).find('.js-cart-page-contents'),
+            dataCartHtml = $dataCartContents.html(),
+            dataCartItemCount = $dataCartContents.attr('data-cart-item-count'),
+            $miniCartContents = $(miniCartContentsSelector),
+            $cartItemCount = $('.js-cart-item-count')
+
+          $cartItemCount.text(dataCartItemCount)
+          $miniCartContents.html(dataCartHtml)
+          currencyPicker.onMoneySpanAdded()
+
+          if (parseInt(dataCartItemCount) > 0) {
+            ajaxify.openCart();
+          }
+          else {
+            ajaxify.closeCart();
+          }
+        }
+      })
+    },
+    onError: function(XMLHttpRequest, textStatus) {
+      let data = XMLHttpRequest.responseJSON;
+      alert(data.status + ' - ' + data.message + ': ' + data.description)
+    },
+    onCartButtonClick: function(event) {
+      let
+        isCartOpen = $('html').hasClass('mini-cart-open'),
+        isInCart = window.location.href.indexOf('/cart') !== -1
+
+      if (!isInCart) {
+        event.preventDefault()
+        if (!isCartOpen) {
+          ajaxify.openCart()
+        }
+        else {
+          ajaxify.closeCart()
+        }
+      }
+    },
+    openCart: function() {
+      $('html').addClass('mini-cart-open')
+    },
+    closeCart: function() {
+      $('html').removeClass('mini-cart-open')
+    },
+    
+    init: function() {
+        $(document).on('submit', addToCartFormSelector, ajaxify.onAddToCart)
+    }
+}
+      
 
 })
 
